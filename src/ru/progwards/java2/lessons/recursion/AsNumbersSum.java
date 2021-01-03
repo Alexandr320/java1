@@ -1,40 +1,24 @@
 package ru.progwards.java2.lessons.recursion;
 
-import java.util.*;
-import java.util.stream.Collectors;
-
 public class AsNumbersSum {
     public static void main(String[] args) {
-        System.out.println(asNumbersSum(4));
+
+        System.out.println(asNumbersSum(7));
     }
 
     public static String asNumbersSum(int number) {
-        String result = "";
-        Set<List<Integer>> combinations = getSetList(number);
-        for (List<Integer> combination : combinations) {
-            String combinationStr = combination.stream().map(e -> "" + e).collect(Collectors.joining("+"));
-            if (!"".equals(result)) {
-                result += " = ";
-            }
-            result += combinationStr;
-        }
-        return result;
+        return myRecursion(number, number,"");
     }
 
-    public static Set<List<Integer>> getSetList(int number) {
-        if (number <= 1) {
-            return new LinkedHashSet<>(Set.of(new ArrayList<>(List.of(1))));
+    private static String myRecursion(int num, int decompos, String s) {
+        if (decompos <= 0) {
+            return s;
         }
-        Set<List<Integer>> result = new LinkedHashSet<>();
-        for (int a = number - 1; a >= 1; a--) {
-            int b = number - a;
-            Set<List<Integer>> bCombinations = getSetList(b);
-            for (List<Integer> combination : bCombinations) {
-                combination.add(0, a);
-                Collections.sort(combination);
-                Collections.reverse(combination);
-                result.add(combination);
-            }
+        int min = Math.min(num, decompos);
+        String prefixWithMin = "".equals(s) ? "" + min : s + "+" + min;
+        String result = myRecursion(min,decompos - min, prefixWithMin);
+        if (min > 1) {
+            result += " = " + myRecursion(min - 1, decompos, s);
         }
         return result;
     }

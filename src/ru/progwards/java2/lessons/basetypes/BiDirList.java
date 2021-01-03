@@ -1,30 +1,25 @@
 package ru.progwards.java2.lessons.basetypes;
 
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
-public class BiDirList<T> {   // Реализовать класс BiDirList - двунаправленный связный список
+public class BiDirList<T> implements Iterable<T> {   // Реализовать класс BiDirList - двунаправленный связный список
     public static void main(String[] args) {
         BiDirList<Integer> list = new BiDirList<>();
         list.addFirst(2);
         list.addFirst(5);
         list.addFirst(7);
-        ListItem<Integer> current = list.getTail();
-        while(current != null) {
-            System.out.println(current.getItem());
-            current = current.getPrevious();
+        for (Integer val : list) {
+            System.out.println(val);
         }
-        //System.out.println(list);
 
         BiDirList<String> list1 = new BiDirList<>();
         list1.addLast("dfdsfs");
         list1.addLast("ljhljhl");
         list1.addLast("wqrwqr");
-        ListItem<String> current1 = list1.getHead();
-        while (current1 != null) {
-            System.out.println(current1.getItem());
-            current1 = current1.getNext();
+        for (String val : list1) {
+            System.out.println(val);
         }
-        //System.out.println(list1);
     }
 
     private static class ListItem<T> {
@@ -75,6 +70,7 @@ public class BiDirList<T> {   // Реализовать класс BiDirList - �
             tail = li;
         } else {
             tail.setNext(li);
+            li.setPrevious(tail);
             tail = li;
         }
     }
@@ -86,6 +82,7 @@ public class BiDirList<T> {   // Реализовать класс BiDirList - �
             tail = li;
         } else  {
             head.setPrevious(li);
+            li.setNext(head);
             head = li;
         }
     }
@@ -176,6 +173,25 @@ public class BiDirList<T> {   // Реализовать класс BiDirList - �
             index++;
             current = current.getNext();
         }
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return new Iterator<T>() {
+            private ListItem<T> curr = head;
+
+            @Override
+            public boolean hasNext() {
+                return curr != null;
+            }
+
+            @Override
+            public T next() {
+                T result = curr.getItem();
+                curr = curr.getNext();
+                return result;
+            }
+        };
     }
 
 
