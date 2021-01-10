@@ -49,9 +49,6 @@ public class BiDirList<T> implements Iterable<T> {   // Реализовать �
 
         public ListItem<T> getPrevious() { return previous; }
 
-        //@Override
-        //public String toString() { return item.toString(); }
-
     }
 
     private ListItem<T> head;
