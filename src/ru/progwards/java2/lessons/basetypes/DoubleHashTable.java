@@ -22,6 +22,9 @@ public class DoubleHashTable<K extends DoubleHashTable.HashValue, V> implements 
         for (DoubleHashItem<IntKey, String> item : table) {
             System.out.println(String.format("%s: %s", item.getKey(), item.getValue()));
         }
+
+        StringKey stringKey = new StringKey("i-0");
+        System.out.println(stringKey.getHash());
     }
 
     private void allocateMemory() {  // выделение большей памяти для таблицы
@@ -123,7 +126,7 @@ public class DoubleHashTable<K extends DoubleHashTable.HashValue, V> implements 
     }
 
     public int getHash(HashValue hashValue) {     // хэш-функция
-        return hashValue.getHash() % table.length;
+        return (int) (hashValue.getHash() % table.length);
     }
 
     static final long UINT_MAX = 4294967295L;  // Хэш-функция для строк - вспомогательная
@@ -274,7 +277,7 @@ public class DoubleHashTable<K extends DoubleHashTable.HashValue, V> implements 
     }
 
     public static interface HashValue {
-        int getHash();
+        long getHash();
     }
 
     public static class IntKey implements HashValue {
@@ -298,7 +301,7 @@ public class DoubleHashTable<K extends DoubleHashTable.HashValue, V> implements 
             return "" + value;
         }
         @Override
-        public int getHash() {
+        public long getHash() {
             return value;
         }
     }
@@ -324,7 +327,7 @@ public class DoubleHashTable<K extends DoubleHashTable.HashValue, V> implements 
             return value;
         }
         @Override
-        public int getHash() {
+        public long getHash() {
             long b = 378551;
             long a = 63689;
             long hash = 0;
@@ -332,7 +335,7 @@ public class DoubleHashTable<K extends DoubleHashTable.HashValue, V> implements 
                 hash = unsignedInt(hash * a + value.charAt(i));
                 a = unsignedInt(a * b);
             }
-            return (int) hash;
+            return hash;
         }
     }
 
