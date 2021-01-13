@@ -129,6 +129,9 @@ public class DoubleHashTable<K extends DoubleHashTable.HashValue, V> implements 
         return (int) (hashValue.getHash() % table.length);
     }
 
+
+
+
     static final long UINT_MAX = 4294967295L;  // Хэш-функция для строк - вспомогательная
     static long unsignedInt(long num) {
         return num % UINT_MAX;
@@ -277,7 +280,7 @@ public class DoubleHashTable<K extends DoubleHashTable.HashValue, V> implements 
     }
 
     public static interface HashValue {
-        long getHash();
+        int getHash();
     }
 
     public static class IntKey implements HashValue {
@@ -301,7 +304,7 @@ public class DoubleHashTable<K extends DoubleHashTable.HashValue, V> implements 
             return "" + value;
         }
         @Override
-        public long getHash() {
+        public int getHash() {
             return value;
         }
     }
@@ -327,14 +330,17 @@ public class DoubleHashTable<K extends DoubleHashTable.HashValue, V> implements 
             return value;
         }
         @Override
-        public long getHash() {
-            long b = 378551;
-            long a = 63689;
-            long hash = 0;
+        public int getHash() {
+            int hash = 0xAAAAAAAA;
             for (int i = 0; i < value.length(); i++) {
-                hash = unsignedInt(hash * a + value.charAt(i));
-                a = unsignedInt(a * b);
+                if ((i & 1) == 0) {
+                    hash ^= ((hash << 7) ^ value.charAt(i) * (hash >> 3));
+                } else {
+                    hash ^= (~((hash << 11) + value.charAt(i) ^ (hash >> 5)));
+                }
             }
+            if (hash < 0)
+                hash *= -1;
             return hash;
         }
     }
