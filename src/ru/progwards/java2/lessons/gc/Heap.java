@@ -1,11 +1,13 @@
 package ru.progwards.java2.lessons.gc;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Heap {
     private final byte[] bytes;
-    private final Map<Integer, Integer> indexToLengthMap = new HashMap<>();
-    private final Map<Integer, Integer> freeIndexMap = new HashMap<>();
+    private final Map<Integer, Integer> indexToLengthMap = new ConcurrentHashMap<>();
+    private final Map<Integer, Integer> freeIndexMap = new ConcurrentHashMap<>();
+    List<Integer> deleted = new ArrayList<>();
 
     public static void main(String[] args) {
         Heap heap = new Heap(10);
@@ -68,8 +70,9 @@ public class Heap {
     public void free(int ptr) { // "удаляет", т.е. помечает как свободный блок памяти по "указателю". Проверять валидность
         // указателя - т.е. то, что он соответствует началу ранее выделенного блока, а не его середине, или вообще, уже свободному
         if (!indexToLengthMap.containsKey(ptr)) {
-            throw new InvalidPointerException("Нет блока с таким указателем!");
+            return;
         }
+        deleted.add(ptr);
         int size = indexToLengthMap.remove(ptr);
         freeIndexMap.put(ptr, size);
     }
@@ -140,6 +143,14 @@ public class Heap {
         indexToLengthMap.remove(oldLastIndex);
         indexToLengthMap.put(newStartIndex, length);
         return new AbstractMap.SimpleEntry<>(newStartIndex, length);
+    }
+
+    public void getBytes(int ptr, byte[] bytes) {
+        //System.arraycopy(this.bytes, ptr, bytes, 0, size);
+    }
+
+    public void setBytes(int ptr, byte[] bytes) {
+        //System.arraycopy(bytes, 0, this.bytes, ptr, size);
     }
 
     public static class OutOfMemoryException extends RuntimeException {  // нет свободного блока подходящего размера
